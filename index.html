@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>K-Means</title>
+
+    <style>
+        #container {
+            width: 100%;
+        }
+        #canvas {
+            border: solid 1px;
+        }
+        #canvasContainer {
+            padding-left: 0;
+            padding-right: 0;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            width:800px;
+        }
+    </style>
+
+    <script type="text/javascript" src="utils.js"></script>
+    <script type="text/javascript" src="point.js"></script>
+    <script type="text/javascript" src="cluster.js"></script>
+    <script type="text/javascript" src="kmeans.js"></script>
+</head>
+
+<body>
+    <div id="container">
+         <div id="canvasContainer">
+             <h1>Exemplo de algoritmo de clusterização <a href="http://en.wikipedia.org/wiki/K-means_clustering">K-Means</a></h1><br />
+             Insira os pontos na área abaixo, selecione o número de grupos e clique em agrupar.<br />
+             Grupos: <input type="text" id="grupos" /><input type="button" value="Agrupar" onclick="doKMeansClustering();" /><br /><br />
+             <canvas id="canvas" width="780" height="600"></canvas>
+         </div>
+    </div>
+    
+</body>
+
+<script>
+
+    var canvas = document.getElementById('canvas');
+
+    var points = [];
+    canvas.onclick = function (e) {
+        var x = e.offsetX, y = e.offsetY;
+        canvas.drawCircle(x, y, 5, 'black');
+        points.push(new Point(x, y));
+    }
+
+    var ctx = canvas.context;
+    canvas.drawCircle = function (x, y, radius, fillColor) {
+        var ctx = canvas.getContext('2d');
+        ctx.beginPath();
+        ctx.fillStyle = fillColor;
+        ctx.arc(x, y, radius, 0, Math.PI * 2, false);
+        ctx.fill();
+    }
+
+    canvas.clear = function () {
+        canvas.width = canvas.width;
+    }
+
+    function doKMeansClustering() {
+        var clusterCount = parseInt(document.getElementById('grupos').value);
+        var clusters = new KMeans().getClusters(points, clusterCount);
+
+        for (var i = 0; i < clusters.length; i++) {
+            var cluster = clusters[i];
+            var color = getColor(i);
+
+            for (var p = 0; p < cluster.points.length; p++) {
+                var point = cluster.points[p];
+                canvas.drawCircle(point.x, point.y, 5, color);
+            }
+        }
+    }
+
+    function getColor(idx) {
+        return ['black', 'red', 'yellow', 'blue', 'green'][idx] || '#' + Math.floor(Math.random() * 16777215).toString(16) ;
+    }
+
+</script>
+
+</html>
